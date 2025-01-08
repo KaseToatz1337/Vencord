@@ -3,18 +3,23 @@ import struct
 import nacl.secret
 
 from player import Player
+from reader import Reader
 
 class Voice:
     def __init__(self, ip: str, port: int, ssrc: int, key: bytes) -> None:
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.connect((ip, port))
-        self.socket.setblocking(False)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.connect((ip, port))
+        self.sock.setblocking(False)
+        self.ip = ip
+        self.port = port
         self.ssrc = ssrc
         self.key = key
         self.sequence = 0
         self.timestamp = 0
         self.increment = 0
         self.player = None
+        self.reader = Reader(self)
+        self.reader.start()
 
     def add(self, attr: str, value: int, limit: int) -> None:
         val = getattr(self, attr)
@@ -42,7 +47,7 @@ class Voice:
     def sendPacket(self, data: bytes) -> None:
         self.add("sequence", 1, 65535)
         packet = self.createPacket(data)
-        self.socket.sendall(packet)
+        self.sock.sendall(packet)
         self.add("timestamp", 960, 4294967295)
 
     def sendSilence(self) -> None:

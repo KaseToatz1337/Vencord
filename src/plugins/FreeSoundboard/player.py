@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from voice import Voice
 
 class Player(threading.Thread):
-
     def __init__(self, voice: Voice, url: str) -> None:
         super().__init__(daemon=True)
         self.voice = voice
