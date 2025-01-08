@@ -2,6 +2,8 @@ import socket
 import struct
 import nacl.secret
 
+from player import Player
+
 class Voice:
     def __init__(self, ip: str, port: int, ssrc: int, key: bytes) -> None:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -12,6 +14,7 @@ class Voice:
         self.sequence = 0
         self.timestamp = 0
         self.increment = 0
+        self.player = None
 
     def add(self, attr: str, value: int, limit: int) -> None:
         val = getattr(self, attr)
@@ -45,3 +48,9 @@ class Voice:
     def sendSilence(self) -> None:
         for _ in range(5):
             self.sendPacket(b"\xF8\xFF\xFE")
+
+    def play(self, url: str) -> None:
+        if self.player and self.player.playing.is_set():
+            self.player.stop()
+        self.player = Player(self, url)
+        self.player.start()
