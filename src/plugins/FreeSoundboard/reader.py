@@ -18,7 +18,7 @@ class Reader(threading.Thread):
     def intercept(self, packet: Packet) -> None:
         if packet[IP].dst == self.voice.ip and packet[UDP].dport == self.voice.port:
             data = packet[Raw].load
-            if (data[:2] in [b"\x90\x78", b"\x80\x78"]):
+            if (data[:2] == b"\x90\x78"):
                 self.voice.sequence = struct.unpack("!H", data[2:4])[0]
                 self.voice.timestamp = struct.unpack("!I", data[4:8])[0]
                 self.voice.increment = struct.unpack(">I", data[-4:])[0]

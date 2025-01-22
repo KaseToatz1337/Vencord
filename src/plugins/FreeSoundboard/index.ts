@@ -42,5 +42,42 @@ WebSocket = HijackedWs;
 export default definePlugin({
     name: "FreeSoundboard",
     description: "Free Soundbourd Sounds.",
-    authors: [Devs.KaseToatz, Devs.sadan],
+    authors: [Devs.KaseToatz],
+    patches: [
+        {
+            find: "canUseSoundboardEverywhere:",
+            replacement: {
+                match: /canUseSoundboardEverywhere:\i/,
+                replace: "canUseSoundboardEverywhere:()=>true"
+            }
+        },
+        {
+            find: "isSectionNitroLocked",
+            replacement: {
+                match: /(?=let{categoryInfo)/,
+                replace: "e.isSectionNitroLocked=false;e.showNitroDivider=false;"
+            }
+        },
+        {
+            find: "soundButtonProps",
+            replacement: {
+                match: /(?=let{descriptors)/,
+                replace: "e.isNitroLocked=false;"
+            }
+        },
+        {
+            find: ".categoryItemLockIconContainer",
+            replacement: {
+                match: /(?=let{className)/,
+                replace: "e.isLocked=false;"
+            }
+        },
+        {
+            find: ".upsellContainerInline",
+            replacement: {
+                match: /(?=let{showUpsell)/,
+                replace: "e.showUpsell=false;"
+            }
+        }
+    ]
 });
