@@ -20,6 +20,7 @@ class Voice:
         self.player = None
         self.reader = Reader(self)
         self.reader.start()
+        self.update = False
 
     def add(self, attr: str, value: int, limit: int) -> None:
         val = getattr(self, attr)
@@ -48,6 +49,7 @@ class Voice:
         self.add("sequence", 1, 65535)
         packet = self.createPacket(data)
         self.sock.sendall(packet)
+        self.update = True
         self.add("timestamp", 960, 4294967295)
 
     def sendSilence(self) -> None:

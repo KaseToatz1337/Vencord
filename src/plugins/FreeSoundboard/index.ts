@@ -6,6 +6,16 @@ var ip = undefined;
 var port = undefined;
 var ssrc = undefined;
 
+class HijackedWs extends WebSocket {
+    send(data: string | ArrayBufferLike | Blob | ArrayBufferView) {
+        if (data.toString().includes("aead_aes256_gcm_rtpsize")) {
+            data = data.toString().replace(new RegExp("aead_aes256_gcm_rtpsize", "g"), "aead_xchacha20_poly1305_rtpsize");
+        }
+        super.send(data);
+    }
+}
+WebSocket = HijackedWs;
+
 export default definePlugin({
     name: "FreeSoundboard",
     description: "Free Soundbourd Sounds.",
@@ -46,8 +56,6 @@ export default definePlugin({
                 replace: "e.showUpsell=false;"
             }
         },
-
-
         {
             find: "handleReady(e)",
             replacement: {
